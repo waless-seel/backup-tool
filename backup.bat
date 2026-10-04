@@ -1,98 +1,96 @@
 @echo off
+chcp 65001 >nul
 setlocal enabledelayedexpansion
 
 :: ==============================================
 :: Windows Automated Backup Script
 :: ==============================================
 
-:: Ý’èƒZƒNƒVƒ‡ƒ“ - •K—v‚É‰ž‚¶‚Ä•ÒW‚µ‚Ä‚­‚¾‚³‚¢
+:: è¨­å®šã‚»ã‚¯ã‚·ãƒ§ãƒ³ - å¿…è¦ã«å¿œã˜ã¦ç·¨é›†ã—ã¦ãã ã•ã„
 
-:: ƒoƒbƒNƒAƒbƒv‘ÎÛƒtƒHƒ‹ƒ_i•¡”Žw’è‰Â”\AƒXƒy[ƒX‚Å‹æØ‚éj
+:: ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å¯¾è±¡ãƒ•ã‚©ãƒ«ãƒ€ï¼ˆè¤‡æ•°æŒ‡å®šå¯èƒ½ã€ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Šï¼‰
 set SOURCE_DRIVE=C:
-set SOURCE_DIRS=Users\%USERNAME%\Pictures Users\%USERNAME%\Videos Users\%USERNAME%\Music
+set SOURCE_DIRS=Users\%USERNAME%\home Users\%USERNAME%\Pictures Users\%USERNAME%\Videos Users\%USERNAME%\Music MO2
 
 set BACKUP_DRIVE=D:
 set BACKUP_ROOT_DIR=Backup
 set BACKUP_BASE_DIR=%BACKUP_DRIVE%\%BACKUP_ROOT_DIR%
 
-:: œŠOƒtƒHƒ‹ƒ_irobocopy‚Ì/XDƒIƒvƒVƒ‡ƒ“—pAƒXƒy[ƒX‚Å‹æØ‚éj
-set EXCLUDE_DIRS=temp tmp cache node_modules .git __pycache__ OneDrive GoogleDrive GooglePhoto Steam
+:: é™¤å¤–ãƒ•ã‚©ãƒ«ãƒ€ï¼ˆrobocopy ã® /XD ã‚ªãƒ—ã‚·ãƒ§ãƒ³ç”¨ã€ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Šï¼‰
+set EXCLUDE_DIRS=temp tmp cache node_modules .git __pycache__ GoogleDrive GooglePhoto DMMGamePlayer
 
-:: œŠOƒtƒ@ƒCƒ‹irobocopy‚Ì/XFƒIƒvƒVƒ‡ƒ“—pAƒXƒy[ƒX‚Å‹æØ‚éj
+:: é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«ï¼ˆrobocopy ã® /XF ã‚ªãƒ—ã‚·ãƒ§ãƒ³ç”¨ã€ã‚¹ãƒšãƒ¼ã‚¹åŒºåˆ‡ã‚Šï¼‰
 set EXCLUDE_FILES=*.temp *.tmp *.log thumbs.db desktop.ini
 
-:: ƒƒOƒtƒ@ƒCƒ‹
+:: ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«
 set LOG_FILE=%BACKUP_BASE_DIR%\backup_log.txt
 
-:: “úŽžŽæ“¾iYYYY-MM-DD_HH-MM-SSŒ`Ž®j
-for /f "tokens=2 delims==" %%a in ('wmic OS Get localdatetime /value') do set "dt=%%a"
-set "YY=%dt:~2,2%" & set "YYYY=%dt:~0,4%" & set "MM=%dt:~4,2%" & set "DD=%dt:~6,2%"
-set "HH=%dt:~8,2%" & set "Min=%dt:~10,2%" & set "Sec=%dt:~12,2%"
-set "timestamp=%YYYY%-%MM%-%DD%_%HH%-%Min%-%Sec%"
+:: æ—¥æ™‚å–å¾—ï¼ˆYYYY-MM-DD_HH-MM-SS å½¢å¼ã€WMIC ä¸è¦ï¼‰
+for /f %%a in ('powershell -NoProfile -Command "Get-Date -Format yyyy-MM-dd_HH-mm-ss"') do set "timestamp=%%a"
 
-:: ƒoƒbƒNƒAƒbƒvƒfƒBƒŒƒNƒgƒŠì¬
+:: ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªä½œæˆ
 set BACKUP_DIR=%BACKUP_BASE_DIR%
 if not exist "%BACKUP_BASE_DIR%" mkdir "%BACKUP_BASE_DIR%"
 if not exist "%BACKUP_DIR%" mkdir "%BACKUP_DIR%"
 
-:: ƒƒOŠJŽn
+:: ãƒ­ã‚°é–‹å§‹
 echo ======================================== >> "%LOG_FILE%"
-echo ƒoƒbƒNƒAƒbƒvŠJŽn: %timestamp% >> "%LOG_FILE%"
-echo ƒoƒbƒNƒAƒbƒv‘ÎÛ: %SOURCE_DIRS% >> "%LOG_FILE%"
-echo ƒoƒbƒNƒAƒbƒvæ: %BACKUP_DIR% >> "%LOG_FILE%"
-echo œŠOƒtƒHƒ‹ƒ_: %EXCLUDE_DIRS% >> "%LOG_FILE%"
-echo œŠOƒtƒ@ƒCƒ‹: %EXCLUDE_FILES% >> "%LOG_FILE%"
+echo ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—é–‹å§‹: %timestamp% >> "%LOG_FILE%"
+echo ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å¯¾è±¡: %SOURCE_DIRS% >> "%LOG_FILE%"
+echo ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å…ˆ: %BACKUP_DIR% >> "%LOG_FILE%"
+echo é™¤å¤–ãƒ•ã‚©ãƒ«ãƒ€: %EXCLUDE_DIRS% >> "%LOG_FILE%"
+echo é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«: %EXCLUDE_FILES% >> "%LOG_FILE%"
 echo ======================================== >> "%LOG_FILE%"
 
-echo ƒoƒbƒNƒAƒbƒv‚ðŠJŽn‚µ‚Ü‚·...
-echo ƒoƒbƒNƒAƒbƒv‘ÎÛ: %SOURCE_DIRS%
-echo ƒoƒbƒNƒAƒbƒvæ: %BACKUP_DIR%
-echo œŠOƒtƒHƒ‹ƒ_: %EXCLUDE_DIRS%
-echo œŠOƒtƒ@ƒCƒ‹: %EXCLUDE_FILES%
+echo ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ã‚’é–‹å§‹ã—ã¾ã™...
+echo ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å¯¾è±¡: %SOURCE_DIRS%
+echo ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å…ˆ: %BACKUP_DIR%
+echo é™¤å¤–ãƒ•ã‚©ãƒ«ãƒ€: %EXCLUDE_DIRS%
+echo é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«: %EXCLUDE_FILES%
 echo.
 
 set OVERALL_RESULT=0
 
-:: •¡”‚Ìƒ\[ƒXƒfƒBƒŒƒNƒgƒŠ‚ðˆ—
+:: è¤‡æ•°ã®ã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã‚’å‡¦ç†
 for %%S in (%SOURCE_DIRS%) do (
     set CURRENT_SOURCE=%%~S
     set CURRENT_SOURCE_DIR=!SOURCE_DRIVE!\!CURRENT_SOURCE!
     if exist "!CURRENT_SOURCE_DIR!" (
-        echo [ƒ\[ƒXƒfƒBƒŒƒNƒgƒŠ] !CURRENT_SOURCE!
-        echo [ƒ\[ƒXƒtƒHƒ‹ƒ_] !CURRENT_SOURCE_DIR!
-        echo [ƒ\[ƒXƒtƒHƒ‹ƒ_] !CURRENT_SOURCE_DIR! >> "%LOG_FILE%"
+        echo [ã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª] !CURRENT_SOURCE!
+        echo [ã‚½ãƒ¼ã‚¹ãƒ•ã‚©ãƒ«ãƒ€] !CURRENT_SOURCE_DIR!
+        echo [ã‚½ãƒ¼ã‚¹ãƒ•ã‚©ãƒ«ãƒ€] !CURRENT_SOURCE_DIR! >> "%LOG_FILE%"
         
-        :: ƒ\[ƒXƒtƒHƒ‹ƒ_–¼‚Æo—Íæ‚ðŒ‹‡‚µ‚ÄƒoƒbƒNƒAƒbƒvæ‚É’Ç‰Á
+        :: ã‚½ãƒ¼ã‚¹ãƒ•ã‚©ãƒ«ãƒ€ã®éšŽå±¤ã‚’ä¿æŒã—ã¦ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å…ˆã«è¿½åŠ 
         set "DEST_PATH=!BACKUP_DIR!\!CURRENT_SOURCE!"
-        echo [ƒoƒbƒNƒAƒbƒvƒtƒHƒ‹ƒ_] !DEST_PATH!
-        echo [ƒoƒbƒNƒAƒbƒvƒtƒHƒ‹ƒ_] !DEST_PATH! >> "%LOG_FILE%"
+        echo [ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ãƒ•ã‚©ãƒ«ãƒ€] !DEST_PATH!
+        echo [ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—ãƒ•ã‚©ãƒ«ãƒ€] !DEST_PATH! >> "%LOG_FILE%"
         
-        :: robocopy‚ÅƒoƒbƒNƒAƒbƒvŽÀs
-        :: /MIR = ƒ~ƒ‰[ƒŠƒ“ƒO‚ðs‚¤
-        :: /DCOPY:DAT = ƒ^ƒCƒ€ƒXƒ^ƒ“ƒv‚ð“¯ˆê‚É‚·‚é
-        :: /R:3 = ÄŽŽs‰ñ”3‰ñ
-        :: /W:10 = ÄŽŽsŠÔŠu10•b
-        :: /XD = œŠOƒfƒBƒŒƒNƒgƒŠ
-        :: /XF = œŠOƒtƒ@ƒCƒ‹
+        :: robocopy ã§ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å®Ÿè¡Œ
+        :: /MIR = ãƒŸãƒ©ãƒ¼ãƒªãƒ³ã‚°ï¼ˆã‚³ãƒ”ãƒ¼å…ƒã§å‰Šé™¤ã—ãŸãƒ•ã‚¡ã‚¤ãƒ«ã¯ã‚³ãƒ”ãƒ¼å…ˆã§ã‚‚å‰Šé™¤ï¼‰
+        :: /DCOPY:DAT = ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªã®ãƒ‡ãƒ¼ã‚¿ãƒ»å±žæ€§ãƒ»ã‚¿ã‚¤ãƒ ã‚¹ã‚¿ãƒ³ãƒ—ã‚’ã‚³ãƒ”ãƒ¼
+        :: /R:3 = å†è©¦è¡Œå›žæ•° 3 å›ž
+        :: /W:10 = å†è©¦è¡Œé–“éš” 10 ç§’
+        :: /XD = é™¤å¤–ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒª
+        :: /XF = é™¤å¤–ãƒ•ã‚¡ã‚¤ãƒ«
         robocopy "!CURRENT_SOURCE_DIR!" "!DEST_PATH!" /MIR /DCOPY:DAT /R:3 /W:10 /XD %EXCLUDE_DIRS% /XF %EXCLUDE_FILES%
         
         set CURRENT_RESULT=!ERRORLEVEL!
         if !CURRENT_RESULT! GTR 7 (
             set OVERALL_RESULT=!CURRENT_RESULT!
-            echo [ƒGƒ‰[] !CURRENT_SOURCE_DIR! ‚ÅƒGƒ‰[‚ª”­¶‚µ‚Ü‚µ‚½BƒGƒ‰[ƒR[ƒh: !CURRENT_RESULT!
+            echo [ã‚¨ãƒ©ãƒ¼] !CURRENT_SOURCE_DIR! ã§ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ã¾ã—ãŸã€‚ã‚¨ãƒ©ãƒ¼ã‚³ãƒ¼ãƒ‰: !CURRENT_RESULT!
         ) else (
-            echo [Š®—¹] !CURRENT_SOURCE_DIR!
+            echo [æˆåŠŸ] !CURRENT_SOURCE_DIR!
         )
         echo.
     ) else (
-        echo [Œx] ƒ\[ƒXƒfƒBƒŒƒNƒgƒŠ‚ª‘¶Ý‚µ‚Ü‚¹‚ñ: !CURRENT_SOURCE_DIR!
-        echo [Œx] ƒ\[ƒXƒfƒBƒŒƒNƒgƒŠ‚ª‘¶Ý‚µ‚Ü‚¹‚ñ: !CURRENT_SOURCE_DIR! >> "%LOG_FILE%"
+        echo [è­¦å‘Š] ã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒå­˜åœ¨ã—ã¾ã›ã‚“: !CURRENT_SOURCE_DIR!
+        echo [è­¦å‘Š] ã‚½ãƒ¼ã‚¹ãƒ‡ã‚£ãƒ¬ã‚¯ãƒˆãƒªãŒå­˜åœ¨ã—ã¾ã›ã‚“: !CURRENT_SOURCE_DIR! >> "%LOG_FILE%"
     )
 )
 
 set BACKUP_RESULT=%OVERALL_RESULT%
 
-echo ƒoƒbƒNƒAƒbƒvˆ—‚ªŠ®—¹‚µ‚Ü‚µ‚½B
-echo ƒƒOƒtƒ@ƒCƒ‹: %LOG_FILE%
+echo ãƒãƒƒã‚¯ã‚¢ãƒƒãƒ—å‡¦ç†ãŒçµ‚äº†ã—ã¾ã—ãŸã€‚
+echo ãƒ­ã‚°ãƒ•ã‚¡ã‚¤ãƒ«: %LOG_FILE%
 echo.
 pause
